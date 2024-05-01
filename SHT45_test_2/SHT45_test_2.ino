@@ -9,13 +9,13 @@ ArtronShop_SHT45 sht45(&Wire, 0x44); // SHT45-AD1B => 0x44
 
 #ifdef MQTT_EN
 // WiFi credentials
-const char* ssid = "ACC";
-const char* password = "Neilsoft@123";
+const char* ssid = "iotneilsoft";
+const char* password = "neilsoft";
 
 const char* mqtt_broker = "10.1.1.177";
 const int mqtt_port = 1883;
-const char* mqtt_username = "mqtt-user";  
-const char* mqtt_password = "Neilsoft@123";  
+const char* mqtt_username = "mqtt_user_iiot";  
+const char* mqtt_password = "Neilsoft@1";  
 const char* mqtt_topic = "SHT45/sensorData";
 
 WiFiClient espClient;
