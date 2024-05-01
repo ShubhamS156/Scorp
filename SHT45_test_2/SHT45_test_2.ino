@@ -2,6 +2,7 @@
 #include <Wire.h>
 #include <ArtronShop_SHT45.h>
 #include <PubSubClient.h>
+#include <ArduinoJson.h>
 #include <WiFi.h>
 #define MQTT_EN 1
 
@@ -9,15 +10,16 @@ ArtronShop_SHT45 sht45(&Wire, 0x44); // SHT45-AD1B => 0x44
 
 #ifdef MQTT_EN
 // WiFi credentials
-const char* ssid = "iotneilsoft";
-const char* password = "neilsoft";
+const char* ssid = "NeilSoft-Guest";
+const char* password = "Neil$oft@2023";
 
 const char* mqtt_broker = "10.1.1.177";
 const int mqtt_port = 1883;
 const char* mqtt_username = "mqtt_user_iiot";  
 const char* mqtt_password = "Neilsoft@1";  
-const char* mqtt_topic = "SHT45/sensorData";
+const char* mqtt_topic = "admin/01/serverRoom/SHT45";
 
+StaticJsonDocument<100> doc;
 WiFiClient espClient;
 PubSubClient client(espClient);
 #endif
@@ -36,6 +38,7 @@ void setup() {
    while (WiFi.status() != WL_CONNECTED) {
        delay(500);
        Serial.println("Connecting to WiFi..");
+       Serial.println(WiFi.status());
    }
    Serial.println("Connected to the WiFi network");
    Serial.print("IP: ");
@@ -58,14 +61,21 @@ void setup() {
 
 #ifdef MQTT_EN
 void publishData(float temp, float hum){
-    char tempStr[8];
-    char humStr[8];
-    dtostrf(temp, 1, 2, tempStr);
-    dtostrf(hum, 1, 2, humStr);
+    // char tempStr[8];
+    // char humStr[8];
+    // dtostrf(temp, 1, 2, tempStr);
+    // dtostrf(hum, 1, 2, humStr);
 
-    // Create data string
-    String data = String("Temperature: ") + tempStr + " C, " + "Humidity: " + humStr + "%";
-    client.publish(mqtt_topic, data.c_str());
+    // // Create data string
+    // String data = String("{\"temperature\": ") + tempStr + " C, " + "Humidity: " + humStr + "%";
+    // client.publish(mqtt_topic, data.c_str());
+
+    doc["temperature"] = temp;
+    doc["humidity"] = hum;
+    char jsonbuffer[512];
+    serializeJson(doc,jsonbuffer);
+    doc.clear();
+    client.publish(mqtt_topic,jsonbuffer);
 }
 #endif
 
