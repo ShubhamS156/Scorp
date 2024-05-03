@@ -77,11 +77,23 @@ void publishData(float temp, float hum){
     doc.clear();
     client.publish(mqtt_topic,jsonbuffer);
 }
+void checkConnections() {
+    if (WiFi.status() != WL_CONNECTED) {
+        Serial.println("WiFi connection lost. Restarting...");
+        ESP.restart();
+    }
+  
+    if (!client.connected()) {
+        Serial.println("MQTT connection lost. Reconnecting...");
+        connectToMQTT();
+    }
+}
 #endif
 
 void loop() {
 #ifdef MQTT_EN
   client.loop();
+  checkConnections();
 #endif
   if (sht45.measure()) {
     float temp = sht45.temperature();
